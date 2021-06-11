@@ -1,0 +1,362 @@
+{% extends 'index.html' %}
+{% block content %}
+{% load static %}
+<style>
+table {
+  border-collapse: collapse;
+  border-spacing: 5;
+  width: 100%;
+  border: 1px solid #ddd;
+}
+
+th, td {
+  text-align: center;
+  padding: 8px;
+}
+tr:nth-child(even){background-color: #f2f2f2}
+
+</style>
+<!--csv file banaune-->
+<script>
+function download(filename, text) {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+}
+
+</script>
+         <!-- Begin Page Content -->
+        <div class="container-fluid">
+
+          <!-- Page Heading -->
+          <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Datasets</h1>
+              <a href="#" id="dwn-btn" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"> Generate Report</i></a>
+              <a href="upload" id="upload-btn"  class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50">Upload CSV</i></a>
+              <a href="xtremedata" id="purdat-btn" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"> Generate Full Dataset</i></a>
+          </div>
+
+            <form id="date-sel">
+                {% csrf_token %}
+                <label for="type">Type</label>
+                <select name="type" id="type" onclick="disableenable()">
+                <option value="edata">Electric Data</option>
+                <option value="tdata">Temperature Data</option>
+                <option value="rdata">Rainfall Data</option>
+                <option value="hdata">Humidity Data</option>
+                </select><br>
+
+                <label for="year">Year</label>
+                <select name="year" id="year">
+                  <option value="2074">2074</option>
+                  <option value="2075">2075</option>
+                  <option value="2076">2076</option>
+                </select>
+                <label for="month">Month</label>
+                <select name="month" id="month">
+                    <option value="01">Baishakh</option>
+                    <option value="02">Jyestha</option>
+                    <option value="03">Ashad</option>
+                    <option value="04">Shrawan</option>
+                    <option value="05">Bhadra</option>
+                    <option value="06">Ashwin</option>
+                    <option value="07">Kartik</option>
+                    <option value="08">Mangshir</option>
+                    <option value="09">Poush</option>
+                    <option value="10">Magh</option>
+                    <option value="11">Falgun</option>
+                    <option value="12">Chaitra</option>
+                </select>
+                <button type="submit" formaction="datasets" formmethod="POST" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">Search</button>
+            </form>
+
+            <!--Table data begins -->
+            {% if datatype %}
+            <center><b><h2>
+                {% if datatype == "edata" %} Electricity Load Data {% endif %}
+                {% if datatype == "tdata" %} Temperature Data {% endif %}
+                {% if datatype == 'hdata' %} Humidity Data {% endif %}
+                {% if datatype == 'rdata' %} Rainfall Data {% endif %}
+            </h2></b></center>
+            {% endif %}
+            {% if year %}
+            <center><b><h3>Data of year: {{year}} month: {{month}}</h3></b></center>
+            {% endif %}
+
+            <div style="overflow-x:scroll;overflow-y:scroll;width:100%;">
+                <table id="dbmonthdata" border="5"></table>
+            </div>
+            <br>
+
+            <!--fileupload garne-->
+              <div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">Upload CSV?</h5>
+                      <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">Select the .csv file from your device and click "Upload"</div>
+                    <div class="modal-footer">
+                        <!-- ya upload garne code-->
+
+
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            <!--tableko data ko lagi script-->
+            <!-- edatako-->
+            {% if datatype == 'edata' %}
+            <script>
+                var date = 0;
+                var dato = JSON.parse("{{tabledata|escapejs}}");
+                var monthdata = dato['list2d'];
+                var howmany = dato['howmany'];
+
+                //heading banako
+              var table = document.getElementById("dbmonthdata");
+              var row = table.insertRow(0);
+              for(var i = -1; i<24 ; i++){            //-1 kinavane eutaa leftmost khali cahinxa
+              var cell = row.insertCell(i+1);         //inserting row, +1 cuz naatraa laastmaa haldinxa dataa
+              i++;
+              cell.innerHTML = i.toString().bold(); //inserting bold heading
+              i--;
+              }
+              //dataa haru
+              for(var i = howmany-1; i>=0 ;i--){
+                var row = table.insertRow(1);       // row haleko
+                var cell = row.insertCell(0);       // left side ko gaatey haleko
+                i++;
+                cell.innerHTML = i.toString().bold();// bold banako
+                i--;
+                for(var j = 0; j<24;j++){
+                    cell = row.insertCell(j+1);     // +1 kinaki gaatey 1 baata suru hunxa
+                    cell.innerHTML = monthdata[i][j];
+                }
+              }
+            </script>
+            {% endif %}
+
+            <!-- tdatako-->
+            {% if datatype == 'tdata' %}
+              <script>
+                var date = 0;
+                var dato = JSON.parse("{{tabledata|escapejs}}");
+                var monthdata = dato['list2d'];
+                var howmany = dato['howmany'];
+
+                //heading banako
+              var table = document.getElementById("dbmonthdata");
+              var header =  table.createTHead();
+              var row = header.insertRow(0);
+              for(var i = -1; i<27 ; i++){            //-1 kinavane eutaa leftmost khali cahinxa
+              var cell = row.insertCell(i+1);         //inserting row, +1 cuz naatraa laastmaa haldinxa dataa
+              i++;
+
+              if (i==0){ cell.innerHTML = "id".bold();}
+              if (i==1){ cell.innerHTML = "";}
+              if (i==2){ cell.innerHTML = "Year".bold();}
+              if (i==3){ cell.innerHTML = "Month".bold();}
+              if (i==4){ cell.innerHTML = "Day".bold();}
+              if (i>4){ cell.innerHTML = (i-4).toString().bold();}
+              i--;
+              }
+              //dataa haru
+              for(var i = howmany-1; i>=0 ;i--){
+                var row = table.insertRow(1);       // row haleko
+                var cell = row.insertCell(0);       // left side ko gaatey haleko
+                i++;
+                cell.innerHTML = i.toString().bold();// bold banako
+                i--;
+                for(var j = 0; j<27;j++){
+                    if(j==0){
+                        cell = row.insertCell(j+1);     // +1 kinaki gaatey 1 baata suru hunxa
+                        cell.innerHTML = ""
+                        }
+                    else{
+                        cell = row.insertCell(j+1);     // +1 kinaki gaatey 1 baata suru hunxa
+                        cell.innerHTML = monthdata[i][j];
+                    }
+                }
+              }
+            </script>
+            {% endif %}
+
+            <!-- rdata kolagi -->
+            {% if datatype == 'rdata' %}
+              <script>
+                var date = 0;
+                var dato = JSON.parse("{{tabledata|escapejs}}");
+                var monthdata = dato['list2d'];
+                var howmany = dato['howmany'];
+
+                //heading banako
+              var table = document.getElementById("dbmonthdata");
+              var header =  table.createTHead();
+              var row = header.insertRow(0);
+              for(var i = -1; i<34 ; i++){            //-1 kinavane eutaa leftmost khali cahinxa
+              var cell = row.insertCell(i+1);         //inserting row, +1 cuz naatraa laastmaa haldinxa dataa
+              i++;   //inserting bold heading
+              if (i==0){ cell.innerHTML = "id".bold();}
+              if (i==1){ cell.innerHTML = "";}
+              if (i==2){ cell.innerHTML = "Year".bold();}
+              if (i==3){ cell.innerHTML = "Month".bold();}
+              if (i>3){ cell.innerHTML = (i-3).toString().bold();}
+              i--;
+              }
+              //dataa haru
+              for(var i = howmany-1; i>=0 ;i--){
+                var row = table.insertRow(1);       // row haleko
+                var cell = row.insertCell(0);       // left side ko gaatey haleko
+                i++;
+                cell.innerHTML = i.toString().bold();// bold banako
+                i--;
+                for(var j = 0; j<34;j++){
+                    if(j!=0){
+                    cell = row.insertCell(j+1);     // +1 kinaki gaatey 1 baata suru hunxa
+                    cell.innerHTML = monthdata[i][j];
+                    }
+                    else{
+                    cell = row.insertCell(j+1);
+                    }
+                }
+              }
+            </script>
+            {% endif %}
+
+            <!-- hdata kolagi -->
+            {% if datatype == 'hdata' %}
+              <script>
+                var date = 0;
+                var dato = JSON.parse("{{tabledata|escapejs}}");
+                var monthdata = dato['list2d'];
+                var howmany = dato['howmany'];
+
+                //heading banako
+              var table = document.getElementById("dbmonthdata");
+              var header =  table.createTHead();
+              var row = header.insertRow(0);
+              for(var i = -1; i<34 ; i++){            //-1 kinavane eutaa leftmost khali cahinxa
+              if (i==-1){
+                  var cell = row.insertCell(i+1);         //inserting row, +1 cuz naatraa laastmaa haldinxa dataa
+                  i++;
+                  cell.innerHTML = "id"; //inserting bold heading
+                  i--;
+               }
+
+
+               if (i==0){
+                  var cell = row.insertCell(i+1);         //inserting row, +1 cuz naatraa laastmaa haldinxa dataa
+                  i++;
+                  //cell.innerHTML = "id"; //inserting bold heading
+                  i--;
+                  }
+
+               if (i==1){
+                  var cell = row.insertCell(i+1);         //inserting row, +1 cuz naatraa laastmaa haldinxa dataa
+                  i++;
+                  cell.innerHTML = "Year"; //inserting bold heading
+                  i--;
+               }
+
+               if (i==2){
+                  var cell = row.insertCell(i+1);         //inserting row, +1 cuz naatraa laastmaa haldinxa dataa
+                  i++;
+                  cell.innerHTML = "Month"; //inserting bold heading
+                  i--;
+               }
+
+               if (i>2){
+                  var cell = row.insertCell(i+1);         //inserting row, +1 cuz naatraa laastmaa haldinxa dataa
+                  i++;
+                  cell.innerHTML = (i-3).toString().bold(); //inserting bold heading
+                  i--;
+                  }
+              }
+              //dataa haru
+              for(var i = howmany-1; i>=0 ;i--){
+                var row = table.insertRow(1);       // row haleko
+                var cell = row.insertCell(0);       // left side ko gaatey haleko
+                i++;
+                cell.innerHTML = i.toString().bold();// bold banako
+                i--;
+                for(var j = 0; j<34;j++){
+                    cell = row.insertCell(j+1);     // +1 kinaki gaatey 1 baata suru hunxa
+                    //cell.innerHTML = parseInt(monthdata[i][j])/100;
+                    //cell.innerHTML = (monthdata[i][j]%1*1000).toFixed(2);
+                    if (j==0) continue;
+                    if (j>2){
+                    var hr3 = parseInt(monthdata[i][j])/100;
+                    var hr12 = (monthdata[i][j]%1*1000).toFixed(2);
+                    cell.innerHTML = hr3 + "<br> " + hr12;
+                    }
+                    else{
+                        cell.innerHTML = monthdata[i][j];
+                    }
+                }
+              }
+            </script>
+            {% endif %}
+
+            <!--csv format ma tayaar parne script-->
+            <script>
+                // Start file download. click gaarda download hos vanera button ko taala rakheko
+                document.getElementById("dwn-btn").addEventListener("click", function(){
+                // Generate download of hello.txt file with some content
+                var text = "";
+                console.log(typeof howmany);
+                for(i = 0; i<howmany;i++){
+                    for(j = 0; j<24;j++){
+                        text = text.concat(monthdata[i][j].toString());
+                        if (j!=23) text = text.concat(",");    //last ma comma cahidaina so
+                    }
+                    text = text.concat("\n");
+                }
+                var filename = {{year}}*100+{{month}}
+                filename = "y"+filename+".csv";
+
+                download(filename, text);
+                }, false);
+
+            </script>
+        </div>
+<!--Disable enable ko lagi script -->
+<script>
+function disableenable(){
+    if(document.getElementById("type").value=="edata"){
+        //document.getElementById("intornot").disabled = false;
+        document.getElementById("year").disabled = false;
+        document.getElementById("month").disabled = false;
+    }
+    else if(document.getElementById("type").value=="tdata"){
+        //document.getElementById("intornot").disabled = false;
+        document.getElementById("year").disabled = true;
+        document.getElementById("month").disabled = true;
+    }
+    else if(document.getElementById("type").value=="rdata"){
+        //document.getElementById("intornot").disabled = true;
+        document.getElementById("year").disabled = true;
+        document.getElementById("month").disabled = true;
+    }
+    else{
+        //document.getElementById("intornot").disabled = true;
+        document.getElementById("year").disabled = true;
+        document.getElementById("month").disabled = true;
+    }
+
+}
+</script>
+
+{% endblock %}

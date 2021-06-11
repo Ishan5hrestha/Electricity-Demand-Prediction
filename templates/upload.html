@@ -1,0 +1,74 @@
+{% extends 'index.html' %}
+{% block content %}
+<h3>Data Upload Panel</h3>
+{% if error %}
+ERROR!! The database name already exists
+{% endif %}
+{% if successful %}
+Successfully loaded data to database
+{% endif %}
+<form id="newdata" action="" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label for="year">Data Type </label>
+    <select name="type" id="type" onclick="disableenable()">
+      <option value="edata">Electric Data</option>
+      <option value="tdata">Temperature Data</option>
+      <option value="rdata">Rainfall Data</option>
+        <option value="hdata">Humidity Data</option>
+    </select><br>
+    {{form}}
+
+    <label for="year">Year</label>
+    <select name="year" id="year">
+      <option value="2074">2074</option>
+      <option value="2075">2075</option>
+      <option value="2076">2076</option>
+    </select>
+    <label for="month">Month</label>
+    <select name="month" id="month">
+        <option value="01">Baishakh</option>
+        <option value="02">Jyestha</option>
+        <option value="03">Ashad</option>
+        <option value="04">Shrawan</option>
+        <option value="05">Bhadra</option>
+        <option value="06">Ashwin</option>
+        <option value="07">Kartik</option>
+        <option value="08">Mangshir</option>
+        <option value="09">Poush</option>
+        <option value="10">Magh</option>
+        <option value="11">Falgun</option>
+        <option value="12">Chaitra</option>
+    </select>
+    <label for="intornot">Interpolate</label>
+    <input type="checkbox" id="intornot" name="intornot"/>&nbsp;&nbsp;&nbsp;&nbsp;
+    <button class="btn btn-primary" type="submit">Upload</button>
+    <button class="btn btn-secondary" type="reset" data-dismiss="modal">Clear</button>
+</form>
+<script>
+function disableenable(){
+    if(document.getElementById("type").value=="edata"){
+        document.getElementById("intornot").disabled = false;
+        document.getElementById("intornot").checked = true;
+        document.getElementById("year").disabled = false;
+        document.getElementById("month").disabled = false;
+    }
+    else if(document.getElementById("type").value=="tdata"){
+        document.getElementById("intornot").disabled = false;
+        document.getElementById("year").disabled = true;
+        document.getElementById("month").disabled = true;
+    }
+    else if(document.getElementById("type").value=="rdata"){
+        document.getElementById("intornot").disabled = true;
+        document.getElementById("year").disabled = true;
+        document.getElementById("month").disabled = true;
+    }
+    else{
+        document.getElementById("intornot").disabled = false;
+        document.getElementById("intornot").checked = true;
+        document.getElementById("year").disabled = true;
+        document.getElementById("month").disabled = true;
+    }
+
+}
+</script>
+{% endblock content %}

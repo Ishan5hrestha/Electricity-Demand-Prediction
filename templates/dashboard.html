@@ -1,0 +1,118 @@
+{% extends 'index.html' %}
+{% block content %}
+{% load static %}
+        <!-- Begin Page Content -->
+
+
+          <!-- Page Heading -->
+          <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Forecast</h1>
+            <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
+          </div>
+
+          <!-- Content Row -->
+          <div class="row">
+
+            <!-- Images -->
+            <div class="col">
+              <div class="card border-0" style="width: 15rem;">
+                <img class="card-img-top rounded" src="{% static 'adminpanel_assets/img/ktm.jpg' %}" alt="Card image cap">
+                <div class="card-body">
+                  <p class="card-text font-weight-bold text-center">New Baneswor, Kathmandu</p>
+                </div>
+              </div>
+          </div>
+          <div class="col">
+            <div class="card border-0" style="width: 15rem;">
+              <img class="card-img-top rounded" src="{% static 'adminpanel_assets/img/pkr.jpg' %}" alt="Card image cap">
+              <div class="card-body">
+                <p class="card-text font-weight-bold text-center">Pokhara</p>
+              </div>
+            </div>
+        </div>
+        <div class="col">
+          <div class="card border-0" style="width: 15rem;">
+            <img class="card-img-top rounded" src="{% static 'adminpanel_assets/img/chitwan.jpg' %}" alt="Card image cap">
+            <div class="card-body">
+              <p class="card-text font-weight-bold text-center">Chitwan</p>
+            </div>
+          </div>
+      </div>
+      <div class="col">
+        <div class="card border-0" style="width: 15rem;">
+          <img class="card-img-top rounded" src="{% static 'adminpanel_assets/img/gorkha.jpg' %}" alt="Card image cap">
+          <div class="card-body">
+            <p class="card-text font-weight-bold text-center">Gorkha</p>
+          </div>
+        </div>
+    </div>
+    <div class="col">
+      <div class="card border-0" style="width: 15rem;">
+        <img class="card-img-top rounded" src="{% static 'adminpanel_assets/img/illam.jpg' %}" alt="Card image cap">
+        <div class="card-body">
+          <p class="card-text font-weight-bold text-center">Illam</p>
+        </div>
+      </div>
+  </div>
+            <!-- Earnings (Monthly) Card Example -->
+            <!-- Earnings (Monthly) Card Example -->
+            <!-- Pending Requests Card Example -->
+          </div>
+
+          <!-- Content Row -->
+
+          <div class="row mt-3">
+
+            <!-- Area Chart -->
+            <div class="col-xl-12 col-lg-7">
+              <div class="card shadow mb-4">
+                <!-- Card Header - Dropdown -->
+                <div class="card-header py-3 ">
+                  <h6 class="m-0 font-weight-bold text-primary">Todays Electricity Demand Forecast</h6> Date:<p id="dateOfForecast"></p>
+                </div>
+
+                <!-- Card Body -->
+                <div class="card-body">
+                  <div class="chart-area">
+                    <canvas id="myAreaChart"></canvas>
+                    <script>
+                    var date = 0;
+                        var dato = JSON.parse("{{data|escapejs}}");
+                       var monthdata = dato['list2d'];
+                       var howmany = dato['howmany'];
+                       var datakolist = []
+                        datakolist = monthdata[date];
+                      console.log("monthdata: "+monthdata);
+                      console.log("monthdata[1]: "+monthdata[1]);
+                      console.log("monthdata[1][1]: "+monthdata[1][1]);
+                      console.log("datakolist : "+datakolist);
+                    </script>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row mt-3">
+
+            <!-- Area Chart -->
+            <div class="col-xl-12 col-lg-7">
+              <div class="card shadow mb-4">
+                <!-- Card Header - Dropdown -->
+                <div class="card-header py-3 ">
+                  <h6 class="m-0 font-weight-bold text-primary">Weekly Electrical Demand Forecast (Peak Load)</h6>
+                </div>
+                <!-- Card Body -->
+                <div class="card-body">
+                  <div class="chart-area">
+                    <canvas id="weeklyChart"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <!-- /.container-fluid -->
+
+      </div>
+{% endblock %}
